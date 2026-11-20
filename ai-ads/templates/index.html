@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pub IA</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --text:#1c1e21; --muted:#65676b; --accent:#1877f2; --ok:#1a7f37; --err:#c62828; --line:#dddfe2; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#18191a; --card:#242526; --text:#e4e6eb; --muted:#b0b3b8; --line:#3a3b3c; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.5 system-ui,-apple-system,sans-serif; }
+  main { max-width:860px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { margin:0 0 4px; font-size:1.6rem; }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
+  label { display:block; font-weight:600; margin:12px 0 4px; font-size:.95rem; }
+  input, textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--text); font:inherit; }
+  textarea { min-height:80px; resize:vertical; }
+  .row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0 12px; }
+  button { margin-top:16px; background:var(--accent); color:#fff; border:0; border-radius:8px; padding:12px 20px; font:inherit; font-weight:600; cursor:pointer; }
+  .msg { padding:12px 16px; border-radius:8px; margin-bottom:16px; }
+  .err { background:color-mix(in srgb,var(--err) 12%,transparent); color:var(--err); }
+  .ok { background:color-mix(in srgb,var(--ok) 12%,transparent); color:var(--ok); }
+  .warn { background:color-mix(in srgb,#e3a008 15%,transparent); }
+  .ad .angle { text-transform:uppercase; font-size:.75rem; letter-spacing:.06em; color:var(--accent); font-weight:700; }
+  .ad .primary { white-space:pre-wrap; margin:8px 0; }
+  .ad .preview { border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--bg); }
+  .ad .headline { font-weight:700; }
+  .ad .muted, .muted { color:var(--muted); font-size:.9rem; }
+  .cta { display:inline-block; margin-top:8px; padding:4px 10px; border-radius:6px; background:var(--line); font-size:.85rem; font-weight:600; }
+  details summary { cursor:pointer; margin-top:12px; font-weight:600; color:var(--accent); }
+  code { font-size:.9em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pub IA</h1>
+  <p class="sub">Décrivez votre produit : l'IA écrit vos publicités et les crée sur Facebook / Instagram.</p>
+
+  {% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+
+  {% if published %}
+  <div class="msg ok">
+    ✅ Publicité créée sur votre compte, <strong>en pause</strong> : rien n'est dépensé pour l'instant.<br>
+    Vérifiez-la puis activez-la dans le
+    <a href="{{ published.manager_url }}" target="_blank" rel="noopener">Gestionnaire de publicités</a>.
+    <div class="muted">Campagne {{ published.campaign_id }} · Publicité {{ published.ad_id }}</div>
+  </div>
+  {% endif %}
+
+  {% if meta_missing %}
+  <div class="msg warn">La publication sur Facebook n'est pas encore configurée (manque : {{ meta_missing|join(', ') }}). Vous pouvez quand même générer des pubs. Voir le README.</div>
+  {% endif %}
+
+  <form class="card" method="post" action="/generate">
+    <label for="business">Votre commerce</label>
+    <input id="business" name="business" required placeholder="Ex : boulangerie artisanale à Lyon" value="{{ form.business or '' }}">
+    <label for="product">Produit ou offre à promouvoir</label>
+    <textarea id="product" name="product" required placeholder="Ex : galettes des rois maison, 18 € la 6 parts, commande en ligne avec retrait en boutique">{{ form.product or '' }}</textarea>
+    <label for="audience">Clients visés (facultatif)</label>
+    <input id="audience" name="audience" placeholder="Ex : familles du quartier, 25-55 ans" value="{{ form.audience or '' }}">
+    <div class="row">
+      <div><label for="goal">Objectif</label>
+        <select id="goal" name="goal">
+          {% for g in ["Vendre en ligne", "Faire venir en boutique", "Obtenir des contacts", "Faire connaître la marque"] %}
+          <option {% if form.goal == g %}selected{% endif %}>{{ g }}</option>{% endfor %}
+        </select></div>
+      <div><label for="language">Langue</label>
+        <input id="language" name="language" value="{{ form.language or 'français' }}"></div>
+      <div><label for="count">Nombre de variantes</label>
+        <input id="count" name="count" type="number" min="1" max="5" value="{{ form.count or 3 }}"></div>
+    </div>
+    <button type="submit">✨ Écrire mes publicités</button>
+  </form>
+
+  {% if result %}
+  <h2>Vos publicités</h2>
+  <p class="muted">💡 {{ result.targeting_tips }}</p>
+  {% for v in result.variants %}
+  <div class="card ad">
+    <div class="angle">{{ v.angle }}</div>
+    <div class="preview">
+      <div class="primary">{{ v.primary_text }}</div>
+      <div class="muted">🖼️ Visuel conseillé : {{ v.image_idea }}</div>
+      <div class="headline">{{ v.headline }}</div>
+      <div class="muted">{{ v.description }}</div>
+      <span class="cta">{{ v.call_to_action }}</span>
+    </div>
+    <details>
+      <summary>Publier celle-ci sur Facebook / Instagram</summary>
+      <form method="post" action="/publish" enctype="multipart/form-data">
+        <input type="hidden" name="variant" value="{{ v|tojson|forceescape }}">
+        <label>Nom de la campagne</label>
+        <input name="name" value="{{ v.headline }}">
+        <label>Lien vers votre site ou boutique</label>
+        <input name="link" type="url" required placeholder="https://...">
+        <label>Image (JPG ou PNG)</label>
+        <input name="image" type="file" accept=".jpg,.jpeg,.png" required>
+        <div class="row">
+          <div><label>Budget par jour (€)</label><input name="budget" type="number" min="1" step="0.5" value="5"></div>
+          <div><label>Pays (codes)</label><input name="countries" value="FR"></div>
+          <div><label>Âge min</label><input name="age_min" type="number" min="18" max="65" value="18"></div>
+          <div><label>Âge max</label><input name="age_max" type="number" min="18" max="65" value="65"></div>
+        </div>
+        <button type="submit" {% if meta_missing %}disabled title="Configurez Meta d'abord"{% endif %}>🚀 Créer la pub (en pause)</button>
+      </form>
+    </details>
+  </div>
+  {% endfor %}
+  {% endif %}
+</main>
+</body>
+</html>

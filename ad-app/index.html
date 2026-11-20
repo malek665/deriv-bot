@@ -85,7 +85,7 @@ button,.btn{font:600 14px/1 var(--body);border:1px solid var(--line);background:
       <h1>Studio <span>Pub</span> Boutique</h1>
       <p class="lede">Décrivez votre produit une fois. Le studio crée le visuel, écrit l'annonce en 14 langues et vous donne un bouton de partage pour chaque réseau.</p>
     </div>
-    <span class="sample" id="sampleTag">Exemple pré-rempli — remplacez par votre produit</span>
+    <span class="sample" id="sampleTag">Pré-rempli avec votre produit Maison Radiance</span>
   </header>
 
   <div class="grid">
@@ -94,14 +94,14 @@ button,.btn{font:600 14px/1 var(--body);border:1px solid var(--line);background:
       <div class="head"><h2 id="f-title">Votre produit</h2></div>
       <form id="form" autocomplete="off">
         <label>Nom du produit
-          <input id="name" required value="Savon artisanal à l'huile d'argan">
+          <input id="name" required value="Baguette Lumière Rouge 4-en-1">
         </label>
         <label>Description courte
-          <textarea id="desc">Fait main, 100 % naturel, doux pour toutes les peaux. Parfum fleur d'oranger.</textarea>
+          <textarea id="desc">4 gestes d'institut dans une baguette de poche : micro-courants, lumière rouge LED, chaleur douce et vibrations. Un rituel de 5 minutes par jour pour une peau qui paraît plus lisse et plus lumineuse. Livraison offerte.</textarea>
         </label>
         <div class="row">
           <label>Prix
-            <input id="price" type="number" min="0" step="0.01" value="12.90" inputmode="decimal">
+            <input id="price" type="number" min="0" step="0.01" value="39.90" inputmode="decimal">
           </label>
           <label>Devise
             <select id="currency">
@@ -110,20 +110,20 @@ button,.btn{font:600 14px/1 var(--body);border:1px solid var(--line);background:
           </label>
         </div>
         <label>Réduction (%) <span class="hint">0 = pas de promo</span>
-          <input id="promo" type="number" min="0" max="90" value="20">
+          <input id="promo" type="number" min="0" max="90" value="0">
         </label>
         <label>Nom de la boutique
-          <input id="shop" value="Atelier Malek">
+          <input id="shop" value="Maison Radiance">
         </label>
         <label>Lien vers le produit
-          <input id="link" type="url" value="https://maboutique.example/savon-argan">
+          <input id="link" type="url" value="https://maisonradiance.fr/products/baguette-lumiere-rouge-4-en-1-soin-visage-eclat">
         </label>
         <label>Photo du produit <span class="hint">JPG ou PNG, fond uni de préférence</span>
           <input id="photo" type="file" accept="image/*">
         </label>
         <div class="row">
-          <label>Couleur principale<input id="c1" type="color" value="#1C2B5A"></label>
-          <label>Couleur d'accent<input id="c2" type="color" value="#F2A33A"></label>
+          <label>Couleur principale<input id="c1" type="color" value="#3B1530"></label>
+          <label>Couleur d'accent<input id="c2" type="color" value="#F7A1B5"></label>
         </div>
         <div>
           <div class="eyebrow" style="margin-bottom:8px">Langues de l'annonce</div>
@@ -250,12 +250,15 @@ function wrap(ctx,text,maxW){const words=text.split(/\s+/),lines=[];let cur="";
   return lines.flatMap(l=>{if(ctx.measureText(l).width<=maxW)return[l];const out=[];let c="";for(const ch of l){if(ctx.measureText(c+ch).width>maxW){out.push(c);c=ch}else c+=ch}if(c)out.push(c);return out});
 }
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
-function drawPlaceholder(ctx,x,y,s,d){ // illustration par défaut tant qu'aucune photo n'est chargée
+function drawPlaceholder(ctx,x,y,s,d){ // illustration par défaut (baguette lumineuse) tant qu'aucune photo n'est chargée
   ctx.save();ctx.translate(x+s/2,y+s/2);
-  ctx.fillStyle="rgba(255,255,255,.10)";ctx.beginPath();ctx.arc(0,0,s/2,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=d.c2;roundRect(ctx,-s*.3,-s*.18,s*.6,s*.38,s*.09);ctx.fill();
-  ctx.fillStyle="rgba(255,255,255,.55)";roundRect(ctx,-s*.22,-s*.1,s*.44,s*.08,s*.04);ctx.fill();
-  ctx.fillStyle="rgba(255,255,255,.35)";[[.18,-.3,.05],[.28,-.22,.035],[-.22,-.3,.04]].forEach(([a,b,r])=>{ctx.beginPath();ctx.arc(s*a,s*b,s*r,0,Math.PI*2);ctx.fill()});
+  ctx.fillStyle="rgba(255,255,255,.08)";ctx.beginPath();ctx.arc(0,0,s/2,0,Math.PI*2);ctx.fill();
+  ctx.rotate(-Math.PI/5);
+  const glow=ctx.createRadialGradient(0,-s*.3,0,0,-s*.3,s*.28);glow.addColorStop(0,"rgba(255,70,70,.85)");glow.addColorStop(1,"rgba(255,70,70,0)");
+  ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,-s*.3,s*.28,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=d.c2;roundRect(ctx,-s*.055,-s*.36,s*.11,s*.72,s*.055);ctx.fill();
+  ctx.fillStyle="#FF3B3B";roundRect(ctx,-s*.04,-s*.34,s*.08,s*.1,s*.03);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.6)";ctx.beginPath();ctx.arc(0,s*.12,s*.022,0,Math.PI*2);ctx.fill();
   ctx.restore();
 }
 function render(){
@@ -304,7 +307,7 @@ function render(){
   ctx.fillStyle=d.c1;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(t.c,cx+cw/2,y+ch/2+2*u);
   // lien
   if(d.link){ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillStyle="rgba(255,255,255,.7)";ctx.font=`500 ${30*u}px Inter, sans-serif`;ctx.direction="ltr";
-    ctx.fillText(d.link.replace(/^https?:\/\//,""),W/2,H-pad*0.6);}
+    ctx.fillText(d.link.replace(/^https?:\/\//,"").replace(/^www\./,"").split("/")[0],W/2,H-pad*0.6);}
   $("adImg").src=canvas.toDataURL("image/png");
 }
 function shade(hex,p){const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(c*(100+p)/100)));
@@ -393,8 +396,8 @@ $("form").addEventListener("submit",e=>e.preventDefault());
 $("visLang").addEventListener("change",render);
 
 const FIELDS=["name","desc","price","currency","promo","shop","link","c1","c2"];
-function saveDraft(){store.set("pub-draft",{f:Object.fromEntries(FIELDS.map(k=>[k,$(k).value])),langs:selectedLangs()})}
-(function loadDraft(){const d=store.get("pub-draft",null);if(!d)return;
+function saveDraft(){store.set("pub-draft-mr",{f:Object.fromEntries(FIELDS.map(k=>[k,$(k).value])),langs:selectedLangs()})}
+(function loadDraft(){const d=store.get("pub-draft-mr",null);if(!d)return;
   FIELDS.forEach(k=>{if(d.f[k]!=null)$(k).value=d.f[k]});
   langBox.querySelectorAll("input").forEach(i=>i.checked=d.langs.includes(i.value));$("sampleTag").hidden=true})();
 

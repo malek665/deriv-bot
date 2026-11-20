@@ -38,6 +38,10 @@ def generate():
                               form.get("goal", ""), form.get("language") or "français", count)
     except AdWriterError as e:
         return render_template("index.html", form=form, meta_missing=_meta_status(), error=str(e))
+    except Exception as e:  # on affiche l'erreur sur la page plutôt qu'une page blanche
+        app.logger.exception("Erreur pendant la génération")
+        return render_template("index.html", form=form, meta_missing=_meta_status(),
+                               error=f"Erreur inattendue : {type(e).__name__} : {e}")
     return render_template("index.html", form=form, result=result, meta_missing=_meta_status())
 
 
@@ -81,6 +85,9 @@ def publish():
         )
     except MetaError as e:
         return fail(str(e))
+    except Exception as e:
+        app.logger.exception("Erreur pendant la publication")
+        return fail(f"Erreur inattendue : {type(e).__name__} : {e}")
     return render_template("index.html", form={}, meta_missing=_meta_status(),
                            published=ids, published_variant=variant)
 

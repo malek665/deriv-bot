@@ -1,6 +1,7 @@
 """Génère des variantes de publicités Facebook/Instagram avec Claude."""
 
 import json
+import os
 
 import anthropic
 
@@ -60,6 +61,9 @@ class AdWriterError(Exception):
 
 def generate_ads(business: str, product: str, audience: str, goal: str,
                  language: str = "français", count: int = 3) -> dict:
+    if not os.environ.get("ANTHROPIC_API_KEY", "").strip():
+        raise AdWriterError("Clé API manquante : ajoutez ANTHROPIC_API_KEY=sk-ant-... dans le fichier .env, "
+                            "enregistrez, puis relancez l'outil.")
     client = anthropic.Anthropic()
     prompt = (
         f"Commerce : {business}\n"
@@ -90,6 +94,8 @@ def generate_ads(business: str, product: str, audience: str, goal: str,
         raise AdWriterError(f"Erreur de l'IA ({e.status_code}) : {e.message}") from e
     except anthropic.APIConnectionError as e:
         raise AdWriterError("Impossible de joindre l'IA (connexion réseau).") from e
+    except anthropic.AnthropicError as e:
+        raise AdWriterError(f"Erreur de l'IA : {e}") from e
 
     if response.stop_reason == "refusal":
         raise AdWriterError("L'IA a refusé d'écrire cette publicité. Reformulez la description du produit.")
@@ -99,4 +105,7 @@ def generate_ads(business: str, product: str, audience: str, goal: str,
     text = next((b.text for b in response.content if b.type == "text"), None)
     if not text:
         raise AdWriterError("Réponse vide de l'IA.")
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        raise AdWriterError("Réponse de l'IA illisible, réessayez.") from e

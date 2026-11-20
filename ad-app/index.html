@@ -1,0 +1,403 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio Pub Boutique</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: atelier à deux colonnes — fiche produit à gauche, rendu + diffusion à droite ; une colonne sur mobile */
+:root{
+  --bg:#F3F4F7; --surface:#FFFFFF; --ink:#151B2E; --muted:#5B6278; --line:#DDE0E8;
+  --accent:#2B4EFF; --accent-ink:#FFFFFF; --sun:#F2A33A; --ok:#1F9D63;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1220; --surface:#171C2E; --ink:#E9ECF5; --muted:#9AA2BA; --line:#2A3149;
+  --accent:#6F86FF; --accent-ink:#0E1220; --sun:#F5B65C; --ok:#3CC487; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1220; --surface:#171C2E; --ink:#E9ECF5; --muted:#9AA2BA; --line:#2A3149;
+  --accent:#6F86FF; --accent-ink:#0E1220; --sun:#F5B65C; --ok:#3CC487; color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1240px;margin:0 auto;padding-block:24px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:24px}
+h1{font:800 clamp(28px,4vw,42px)/1.05 var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.lede{color:var(--muted);margin:6px 0 0;max-width:60ch}
+h2{font:600 20px/1.2 var(--display);margin:0;text-wrap:balance}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:24px;min-width:0}
+form{display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:500;font-size:13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=color]{padding:3px;height:40px}
+.hint{font-size:12px;color:var(--muted);font-weight:400}
+.sample{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:color-mix(in srgb,var(--sun) 22%,transparent);color:var(--ink);padding:3px 10px;border-radius:99px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:13px;cursor:pointer;background:var(--bg);user-select:none}
+.chip input{display:none}
+.chip:has(input:checked){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button,.btn{font:600 14px/1 var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.visual{display:grid;place-items:center;background:repeating-conic-gradient(var(--bg) 0 25%,var(--surface) 0 50%) 0 0/22px 22px;border-radius:10px;padding:16px;border:1px solid var(--line)}
+.visual img{max-height:560px;width:auto;max-width:100%;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.copybox{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;font-size:14px;max-height:340px;overflow:auto;overflow-wrap:anywhere}
+.platforms{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pf{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.pf.done{border-color:var(--ok)}
+.pf-top{display:flex;align-items:center;gap:10px}
+.dot{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font:700 13px var(--display);flex:none}
+.pf-name{font-weight:600}
+.pf-kind{font-size:11px;color:var(--muted)}
+.pf-actions{display:flex;gap:6px;flex-wrap:wrap}
+.pf-actions .btn,.pf-actions button{padding:8px 10px;font-size:13px;flex:1}
+.pf label.done-l{flex-direction:row;align-items:center;font-size:12px;color:var(--muted);font-weight:400;gap:6px}
+.pf label.done-l input{width:auto}
+.progress{font:600 13px var(--body);font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.ads{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ads a{color:var(--accent);font-weight:600}
+.ads p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Studio <span>Pub</span> Boutique</h1>
+      <p class="lede">Décrivez votre produit une fois. Le studio crée le visuel, écrit l'annonce en 14 langues et vous donne un bouton de partage pour chaque réseau.</p>
+    </div>
+    <span class="sample" id="sampleTag">Exemple pré-rempli — remplacez par votre produit</span>
+  </header>
+
+  <div class="grid">
+    <!-- Fiche produit -->
+    <section class="panel" aria-labelledby="f-title">
+      <div class="head"><h2 id="f-title">Votre produit</h2></div>
+      <form id="form" autocomplete="off">
+        <label>Nom du produit
+          <input id="name" required value="Savon artisanal à l'huile d'argan">
+        </label>
+        <label>Description courte
+          <textarea id="desc">Fait main, 100 % naturel, doux pour toutes les peaux. Parfum fleur d'oranger.</textarea>
+        </label>
+        <div class="row">
+          <label>Prix
+            <input id="price" type="number" min="0" step="0.01" value="12.90" inputmode="decimal">
+          </label>
+          <label>Devise
+            <select id="currency">
+              <option>EUR</option><option>USD</option><option>GBP</option><option>DZD</option><option>MAD</option><option>TND</option><option>XOF</option><option>CAD</option><option>CHF</option><option>SAR</option><option>AED</option><option>EGP</option><option>TRY</option><option>BRL</option><option>INR</option><option>CNY</option><option>JPY</option>
+            </select>
+          </label>
+        </div>
+        <label>Réduction (%) <span class="hint">0 = pas de promo</span>
+          <input id="promo" type="number" min="0" max="90" value="20">
+        </label>
+        <label>Nom de la boutique
+          <input id="shop" value="Atelier Malek">
+        </label>
+        <label>Lien vers le produit
+          <input id="link" type="url" value="https://maboutique.example/savon-argan">
+        </label>
+        <label>Photo du produit <span class="hint">JPG ou PNG, fond uni de préférence</span>
+          <input id="photo" type="file" accept="image/*">
+        </label>
+        <div class="row">
+          <label>Couleur principale<input id="c1" type="color" value="#1C2B5A"></label>
+          <label>Couleur d'accent<input id="c2" type="color" value="#F2A33A"></label>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px">Langues de l'annonce</div>
+          <div class="chips" id="langs"></div>
+        </div>
+      </form>
+    </section>
+
+    <div class="stack">
+      <!-- Visuel -->
+      <section class="panel" aria-labelledby="v-title">
+        <div class="head">
+          <div><div class="eyebrow">1 · Visuel</div><h2 id="v-title">Votre affiche publicitaire</h2></div>
+          <div class="seg" id="formats"></div>
+        </div>
+        <div class="visual"><img id="adImg" alt="Aperçu de la publicité générée"></div>
+        <p class="hint" id="saveHint" style="margin:10px 0 0">Pour enregistrer l'image : appui long (mobile) ou clic droit → « Enregistrer l'image ».</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <label style="flex-direction:row;align-items:center;gap:8px">Langue du visuel <select id="visLang" style="width:auto"></select></label>
+          <button type="button" id="dl" class="btn-primary">Télécharger le visuel</button>
+        </div>
+      </section>
+
+      <!-- Textes -->
+      <section class="panel" aria-labelledby="t-title">
+        <div class="head">
+          <div><div class="eyebrow">2 · Textes</div><h2 id="t-title">L'annonce, langue par langue</h2></div>
+          <button type="button" id="copyText">Copier ce texte</button>
+        </div>
+        <div class="seg" id="textTabs" style="margin-bottom:12px"></div>
+        <div class="copybox" id="copy" dir="auto"></div>
+      </section>
+
+      <!-- Partage -->
+      <section class="panel" aria-labelledby="s-title">
+        <div class="head">
+          <div><div class="eyebrow">3 · Diffusion</div><h2 id="s-title">Partager sur chaque réseau</h2></div>
+          <div style="min-width:160px"><div class="progress" id="progTxt">0 / 0 publiés</div><div class="bar"><i id="progBar"></i></div></div>
+        </div>
+        <p class="hint" style="margin:-4px 0 14px">Chaque bouton ouvre le réseau avec le texte de la langue choisie au-dessus. Instagram, TikTok, Snapchat et YouTube n'acceptent pas de texte par lien : le texte est copié, puis collez-le avec votre visuel.</p>
+        <div class="platforms" id="platforms"></div>
+      </section>
+
+      <!-- Monde -->
+      <section class="panel" aria-labelledby="w-title">
+        <div class="head"><div><div class="eyebrow">4 · Portée mondiale</div><h2 id="w-title">Toucher des clients dans d'autres pays</h2></div></div>
+        <p style="margin:0 0 14px;color:var(--muted);max-width:70ch">Un partage gratuit atteint surtout vos abonnés. Pour être vu par des inconnus dans un pays précis, il faut une campagne sponsorisée : vous choisissez les pays, l'âge, les centres d'intérêt et le budget par jour. Réutilisez le visuel et les textes ci-dessus.</p>
+        <div class="ads">
+          <div><a href="https://www.facebook.com/business/ads" target="_blank" rel="noopener">Meta Ads</a><p>Facebook, Instagram, Messenger et WhatsApp en une seule campagne.</p></div>
+          <div><a href="https://ads.google.com" target="_blank" rel="noopener">Google Ads</a><p>Recherche Google, YouTube, Gmail et sites partenaires.</p></div>
+          <div><a href="https://ads.tiktok.com" target="_blank" rel="noopener">TikTok Ads</a><p>Vidéos courtes, très efficace pour les 16-35 ans.</p></div>
+          <div><a href="https://ads.pinterest.com" target="_blank" rel="noopener">Pinterest Ads</a><p>Idéal pour déco, mode, beauté, cuisine.</p></div>
+          <div><a href="https://ads.snapchat.com" target="_blank" rel="noopener">Snapchat Ads</a><p>Fort au Moyen-Orient, en Europe et aux États-Unis.</p></div>
+          <div><a href="https://www.linkedin.com/campaignmanager" target="_blank" rel="noopener">LinkedIn Ads</a><p>Pour vendre à des professionnels et des entreprises.</p></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const L = {
+  fr:{n:"Français",loc:"fr-FR",h:"Nouveau !",i:"Découvrez {name}",p:"seulement {price}",was:"au lieu de {old}",c:"Commandez maintenant",pr:"-{p}% pour une durée limitée",tags:["#shopping","#nouveauté","#bonplan"]},
+  en:{n:"English",loc:"en-US",h:"New!",i:"Discover {name}",p:"only {price}",was:"instead of {old}",c:"Order now",pr:"{p}% off for a limited time",tags:["#shopping","#newarrival","#deal"]},
+  ar:{n:"العربية",loc:"ar",h:"جديد!",i:"اكتشف {name}",p:"فقط {price}",was:"بدلاً من {old}",c:"اطلب الآن",pr:"خصم {p}% لفترة محدودة",tags:["#تسوق","#جديد","#عروض"],rtl:true},
+  es:{n:"Español",loc:"es-ES",h:"¡Nuevo!",i:"Descubre {name}",p:"solo {price}",was:"en lugar de {old}",c:"Pide ahora",pr:"{p}% de descuento por tiempo limitado",tags:["#compras","#novedad","#oferta"]},
+  pt:{n:"Português",loc:"pt-BR",h:"Novidade!",i:"Conheça {name}",p:"apenas {price}",was:"em vez de {old}",c:"Peça agora",pr:"{p}% de desconto por tempo limitado",tags:["#compras","#novidade","#promoção"]},
+  de:{n:"Deutsch",loc:"de-DE",h:"Neu!",i:"Entdecke {name}",p:"nur {price}",was:"statt {old}",c:"Jetzt bestellen",pr:"{p}% Rabatt, nur für kurze Zeit",tags:["#shopping","#neu","#angebot"]},
+  it:{n:"Italiano",loc:"it-IT",h:"Novità!",i:"Scopri {name}",p:"solo {price}",was:"invece di {old}",c:"Ordina ora",pr:"{p}% di sconto per un periodo limitato",tags:["#shopping","#novità","#offerta"]},
+  tr:{n:"Türkçe",loc:"tr-TR",h:"Yeni!",i:"{name} ile tanışın",p:"sadece {price}",was:"{old} yerine",c:"Hemen sipariş verin",pr:"Sınırlı süre için %{p} indirim",tags:["#alışveriş","#yeni","#fırsat"]},
+  ru:{n:"Русский",loc:"ru-RU",h:"Новинка!",i:"Откройте для себя {name}",p:"всего {price}",was:"вместо {old}",c:"Закажите сейчас",pr:"Скидка {p}% на ограниченное время",tags:["#шопинг","#новинка","#скидка"]},
+  zh:{n:"中文",loc:"zh-CN",h:"新品！",i:"发现 {name}",p:"仅需 {price}",was:"原价 {old}",c:"立即订购",pr:"限时优惠 {p}%",tags:["#购物","#新品","#优惠"]},
+  hi:{n:"हिन्दी",loc:"hi-IN",h:"नया!",i:"खोजें {name}",p:"सिर्फ़ {price}",was:"{old} की जगह",c:"अभी ऑर्डर करें",pr:"सीमित समय के लिए {p}% छूट",tags:["#शॉपिंग","#नया","#ऑफर"]},
+  ja:{n:"日本語",loc:"ja-JP",h:"新登場！",i:"{name}をチェック",p:"わずか{price}",was:"通常{old}",c:"今すぐ注文",pr:"期間限定{p}%オフ",tags:["#ショッピング","#新商品","#セール"]},
+  id:{n:"Indonesia",loc:"id-ID",h:"Baru!",i:"Temukan {name}",p:"hanya {price}",was:"dari {old}",c:"Pesan sekarang",pr:"Diskon {p}% untuk waktu terbatas",tags:["#belanja","#produkbaru","#promo"]},
+  sw:{n:"Kiswahili",loc:"sw-KE",h:"Mpya!",i:"Gundua {name}",p:"kwa {price} tu",was:"badala ya {old}",c:"Agiza sasa",pr:"Punguzo la {p}% kwa muda mfupi",tags:["#manunuzi","#mpya","#ofa"]},
+};
+const DEFAULT_LANGS=["fr","en","ar","es"];
+const FORMATS={square:{n:"Carré 1080×1080",w:1080,h:1080,for:"Instagram, Facebook"},story:{n:"Story 1080×1920",w:1080,h:1920,for:"TikTok, Reels, Stories, Snapchat"},wide:{n:"Paysage 1200×630",w:1200,h:630,for:"X, LinkedIn, Facebook"}};
+
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let photo=null, format="square", textLang="fr";
+
+// ---------- Langues ----------
+const langBox=$("langs");
+for(const [k,v] of Object.entries(L)){
+  const lab=document.createElement("label");lab.className="chip";
+  lab.innerHTML=`<input type="checkbox" value="${k}" ${DEFAULT_LANGS.includes(k)?"checked":""}>${v.n}`;
+  langBox.appendChild(lab);
+}
+const selectedLangs=()=>[...langBox.querySelectorAll("input:checked")].map(i=>i.value);
+
+// ---------- Données ----------
+function data(){
+  const price=parseFloat($("price").value)||0, promo=Math.min(90,Math.max(0,parseInt($("promo").value)||0));
+  return {name:$("name").value.trim()||"Mon produit",desc:$("desc").value.trim(),price,promo,
+    final:promo?price*(1-promo/100):price,cur:$("currency").value,shop:$("shop").value.trim(),
+    link:$("link").value.trim(),c1:$("c1").value,c2:$("c2").value};
+}
+const money=(v,cur,loc)=>{try{return new Intl.NumberFormat(loc,{style:"currency",currency:cur}).format(v)}catch{return v.toFixed(2)+" "+cur}};
+const fill=(s,o)=>s.replace(/\{(\w+)\}/g,(_,k)=>o[k]??"");
+function tagify(s){const w=s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\p{L}\p{N} ]/gu," ").split(/\s+/).filter(x=>x.length>2).slice(0,3);return w.length?"#"+w.map(x=>x[0].toUpperCase()+x.slice(1).toLowerCase()).join(""):""}
+function hashtags(d,lg){return [tagify(d.name),tagify(d.shop),...L[lg].tags].filter(Boolean).join(" ")}
+
+function adText(d,lg,{short=false}={}){
+  const t=L[lg], price=money(d.final,d.cur,t.loc), old=money(d.price,d.cur,t.loc);
+  const head=`${t.h} ${fill(t.i,{name:d.name})}`;
+  const pr=d.promo?fill(t.pr,{p:d.promo}):"";
+  const priceLine=`${fill(t.p,{price})}${d.promo?" ("+fill(t.was,{old})+")":""}`;
+  if(short) return `${head}${pr?" — "+pr:""} · ${priceLine}. ${t.c} 👉`;
+  return [ `✨ ${head}`, pr?`🔥 ${pr}`:null, d.desc||null, `💰 ${priceLine}`,
+    d.link?`👉 ${t.c} : ${d.link}`:`👉 ${t.c}`, d.shop?`🛍️ ${d.shop}`:null, "", hashtags(d,lg)
+  ].filter(x=>x!==null).join("\n").replace(/\n\n\n+/g,"\n\n");
+}
+
+// ---------- Visuel (canvas) ----------
+const canvas=document.createElement("canvas");
+function wrap(ctx,text,maxW){const words=text.split(/\s+/),lines=[];let cur="";
+  for(const w of words){const t=cur?cur+" "+w:w;if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}
+  if(cur)lines.push(cur);
+  // langues sans espaces (zh, ja) : coupe par caractère
+  return lines.flatMap(l=>{if(ctx.measureText(l).width<=maxW)return[l];const out=[];let c="";for(const ch of l){if(ctx.measureText(c+ch).width>maxW){out.push(c);c=ch}else c+=ch}if(c)out.push(c);return out});
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function drawPlaceholder(ctx,x,y,s,d){ // illustration par défaut tant qu'aucune photo n'est chargée
+  ctx.save();ctx.translate(x+s/2,y+s/2);
+  ctx.fillStyle="rgba(255,255,255,.10)";ctx.beginPath();ctx.arc(0,0,s/2,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=d.c2;roundRect(ctx,-s*.3,-s*.18,s*.6,s*.38,s*.09);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.55)";roundRect(ctx,-s*.22,-s*.1,s*.44,s*.08,s*.04);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.35)";[[.18,-.3,.05],[.28,-.22,.035],[-.22,-.3,.04]].forEach(([a,b,r])=>{ctx.beginPath();ctx.arc(s*a,s*b,s*r,0,Math.PI*2);ctx.fill()});
+  ctx.restore();
+}
+function render(){
+  const d=data(), f=FORMATS[format], lg=$("visLang").value||"fr", t=L[lg];
+  canvas.width=f.w;canvas.height=f.h;const ctx=canvas.getContext("2d");
+  const W=f.w,H=f.h,wide=W>H,u=Math.min(W,H)/1080;
+  const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,d.c1);g.addColorStop(1,shade(d.c1,-35));
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="rgba(255,255,255,.05)";ctx.beginPath();ctx.arc(W*.9,H*.08,Math.max(W,H)*.35,0,Math.PI*2);ctx.fill();
+  ctx.direction=t.rtl?"rtl":"ltr";
+  const pad=70*u;
+  // Zone image
+  const sq=format==="square";
+  let imgBox = wide?{x:W-pad-H*.74,y:H*.16,s:H*.74}:sq?{x:(W-W*.4)/2,y:H*.13,s:W*.4}:{x:(W-W*.62)/2,y:H*.2,s:W*.62};
+  if(photo){const s=imgBox.s,r=Math.min(s/photo.width,s/photo.height);const w=photo.width*r,h=photo.height*r;
+    ctx.save();ctx.shadowColor="rgba(0,0,0,.35)";ctx.shadowBlur=50*u;ctx.shadowOffsetY=20*u;
+    roundRect(ctx,imgBox.x+(s-w)/2,imgBox.y+(s-h)/2,w,h,28*u);ctx.clip();ctx.drawImage(photo,imgBox.x+(s-w)/2,imgBox.y+(s-h)/2,w,h);ctx.restore();}
+  else drawPlaceholder(ctx,imgBox.x,imgBox.y,imgBox.s,d);
+  // Textes
+  const textW = wide?W-imgBox.s-pad*3:W-pad*2;
+  const align = t.rtl?"right":"left", tx = t.rtl?pad+textW:pad;
+  ctx.textAlign=align;ctx.textBaseline="top";
+  ctx.fillStyle=d.c2;ctx.font=`700 ${34*u}px Inter, sans-serif`;
+  ctx.fillText((d.shop||"").toUpperCase(),tx,pad*0.9);
+  if(d.promo){ // badge promo
+    const bs=170*u, bx=t.rtl?pad+bs/2:W-pad-bs/2, by=pad*0.9+bs/2;
+    ctx.fillStyle=d.c2;ctx.beginPath();ctx.arc(bx,by,bs/2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=d.c1;ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`800 ${58*u}px "Bricolage Grotesque", sans-serif`;
+    ctx.direction="ltr";ctx.fillText(`-${d.promo}%`,bx,by);ctx.direction=t.rtl?"rtl":"ltr";ctx.textAlign=align;ctx.textBaseline="top";
+  }
+  let y = wide?H*.3:imgBox.y+imgBox.s+50*u;
+  ctx.fillStyle="#fff";const hs=(wide?66:sq?64:84)*u;ctx.font=`800 ${hs}px "Bricolage Grotesque", sans-serif`;
+  const lines=wrap(ctx,d.name,textW).slice(0,sq?2:3);
+  for(const l of lines){ctx.fillText(l,tx,y);y+=hs*1.05}
+  y+=18*u;
+  const pr=money(d.final,d.cur,t.loc);
+  ctx.fillStyle=d.c2;ctx.font=`800 ${(wide?60:70)*u}px "Bricolage Grotesque", sans-serif`;ctx.fillText(pr,tx,y);
+  if(d.promo){const pw=ctx.measureText(pr).width;ctx.fillStyle="rgba(255,255,255,.6)";ctx.font=`500 ${38*u}px Inter, sans-serif`;
+    const old=money(d.price,d.cur,t.loc),ow=ctx.measureText(old).width,ox=t.rtl?tx-pw-24*u:tx+pw+24*u,oy=y+22*u;
+    ctx.fillText(old,ox,oy);ctx.fillRect(t.rtl?ox-ow:ox,oy+20*u,ow,3*u);}
+  y+=(wide?60:70)*u+34*u;
+  // Bouton CTA
+  ctx.font=`700 ${38*u}px Inter, sans-serif`;const cw=ctx.measureText(t.c).width+80*u,ch=86*u;
+  const cx=t.rtl?tx-cw:tx;
+  ctx.fillStyle="#fff";roundRect(ctx,cx,y,cw,ch,ch/2);ctx.fill();
+  ctx.fillStyle=d.c1;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(t.c,cx+cw/2,y+ch/2+2*u);
+  // lien
+  if(d.link){ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillStyle="rgba(255,255,255,.7)";ctx.font=`500 ${30*u}px Inter, sans-serif`;ctx.direction="ltr";
+    ctx.fillText(d.link.replace(/^https?:\/\//,""),W/2,H-pad*0.6);}
+  $("adImg").src=canvas.toDataURL("image/png");
+}
+function shade(hex,p){const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(c*(100+p)/100)));
+  return "#"+[f(n>>16),f(n>>8&255),f(n&255)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+
+// ---------- Plateformes ----------
+const E=encodeURIComponent;
+const PLATFORMS=[
+  {id:"facebook",n:"Facebook",c:"#1877F2",u:(t,l)=>`https://www.facebook.com/sharer/sharer.php?u=${E(l)}&quote=${E(t)}`},
+  {id:"whatsapp",n:"WhatsApp",c:"#25D366",u:t=>`https://wa.me/?text=${E(t)}`},
+  {id:"x",n:"X (Twitter)",c:"#111111",short:true,u:(t,l)=>`https://twitter.com/intent/tweet?text=${E(t)}&url=${E(l)}`},
+  {id:"telegram",n:"Telegram",c:"#229ED9",u:(t,l)=>`https://t.me/share/url?url=${E(l)}&text=${E(t)}`},
+  {id:"linkedin",n:"LinkedIn",c:"#0A66C2",u:(t,l)=>`https://www.linkedin.com/feed/?shareActive=true&text=${E(t)}`},
+  {id:"threads",n:"Threads",c:"#000000",u:t=>`https://www.threads.net/intent/post?text=${E(t)}`},
+  {id:"pinterest",n:"Pinterest",c:"#E60023",u:(t,l)=>`https://pinterest.com/pin/create/button/?url=${E(l)}&description=${E(t)}`},
+  {id:"reddit",n:"Reddit",c:"#FF4500",short:true,u:(t,l)=>`https://www.reddit.com/submit?url=${E(l)}&title=${E(t)}`},
+  {id:"bluesky",n:"Bluesky",c:"#1185FE",short:true,u:(t,l)=>`https://bsky.app/intent/compose?text=${E(t+" "+l)}`},
+  {id:"tumblr",n:"Tumblr",c:"#36465D",u:(t,l)=>`https://www.tumblr.com/widgets/share/tool?canonicalUrl=${E(l)}&caption=${E(t)}`},
+  {id:"vk",n:"VK",c:"#0077FF",u:(t,l)=>`https://vk.com/share.php?url=${E(l)}&title=${E(t)}`},
+  {id:"line",n:"LINE",c:"#06C755",u:(t,l)=>`https://social-plugins.line.me/lineit/share?url=${E(l)}&text=${E(t)}`},
+  {id:"weibo",n:"Weibo",c:"#E6162D",short:true,u:(t,l)=>`https://service.weibo.com/share/share.php?url=${E(l)}&title=${E(t)}`},
+  {id:"instagram",n:"Instagram",c:"#C13584",copy:"https://www.instagram.com/"},
+  {id:"tiktok",n:"TikTok",c:"#010101",copy:"https://www.tiktok.com/upload"},
+  {id:"snapchat",n:"Snapchat",c:"#E5C800",copy:"https://www.snapchat.com/"},
+  {id:"youtube",n:"YouTube Shorts",c:"#FF0000",copy:"https://studio.youtube.com/"},
+  {id:"gbusiness",n:"Google Business",c:"#4285F4",copy:"https://business.google.com/"},
+];
+let done=store.get("pub-done",{});
+function renderPlatforms(){
+  const d=data(), lg=textLang, full=adText(d,lg), short=adText(d,lg,{short:true});
+  const box=$("platforms");box.innerHTML="";
+  for(const p of PLATFORMS){
+    const card=document.createElement("div");card.className="pf"+(done[p.id]?" done":"");
+    const text=p.short?short:(p.id==="x"?short:full);
+    const kind=p.copy?"Copier le texte + ouvrir l'appli":p.short?"Texte court + lien":"Texte complet";
+    card.innerHTML=`<div class="pf-top"><span class="dot" style="background:${p.c}">${p.n[0]}</span><div><div class="pf-name">${p.n}</div><div class="pf-kind">${kind}</div></div></div><div class="pf-actions"></div><label class="done-l"><input type="checkbox" ${done[p.id]?"checked":""}> Publié</label>`;
+    const act=card.querySelector(".pf-actions");
+    const a=document.createElement("a");a.className="btn btn-primary";a.target="_blank";a.rel="noopener";
+    if(p.copy){a.href=p.copy;a.textContent="Copier et ouvrir";a.addEventListener("click",()=>copy(full,`Texte copié. Collez-le dans ${p.n} avec votre visuel.`));}
+    else{a.href=p.u(text,d.link||"");a.textContent="Partager";}
+    act.appendChild(a);
+    card.querySelector("input").addEventListener("change",e=>{done[p.id]=e.target.checked;store.set("pub-done",done);card.classList.toggle("done",e.target.checked);progress()});
+    box.appendChild(card);
+  }
+  progress();
+}
+function progress(){const n=PLATFORMS.filter(p=>done[p.id]).length;$("progTxt").textContent=`${n} / ${PLATFORMS.length} publiés`;$("progBar").style.width=(100*n/PLATFORMS.length)+"%"}
+
+// ---------- Textes ----------
+function renderTexts(){
+  const langs=selectedLangs();if(!langs.length)return;
+  if(!langs.includes(textLang))textLang=langs[0];
+  const tabs=$("textTabs");tabs.innerHTML="";
+  for(const lg of langs){const b=document.createElement("button");b.type="button";b.textContent=L[lg].n;b.setAttribute("aria-pressed",lg===textLang);
+    b.onclick=()=>{textLang=lg;renderTexts();renderPlatforms()};tabs.appendChild(b)}
+  $("copy").textContent=adText(data(),textLang);
+  $("copy").dir=L[textLang].rtl?"rtl":"ltr";
+  const vl=$("visLang"),cur=vl.value;vl.innerHTML=langs.map(l=>`<option value="${l}">${L[l].n}</option>`).join("");
+  vl.value=langs.includes(cur)?cur:langs[0];
+}
+
+// ---------- Formats ----------
+for(const [k,f] of Object.entries(FORMATS)){const b=document.createElement("button");b.type="button";b.textContent=f.n;b.title=f.for;b.dataset.f=k;
+  b.setAttribute("aria-pressed",k===format);b.onclick=()=>{format=k;document.querySelectorAll("#formats button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.f===k));render()};$("formats").appendChild(b)}
+
+// ---------- Utilitaires ----------
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2600)}
+function copy(text,msg){
+  const ok=()=>toast(msg||"Texte copié");
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($("copy"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Sélectionné : faites Copier (Ctrl+C)")};
+  try{navigator.clipboard.writeText(text).then(ok,fallback)}catch{fallback()}
+}
+$("copyText").onclick=()=>copy($("copy").textContent);
+$("dl").onclick=()=>{
+  const a=document.createElement("a");a.href=canvas.toDataURL("image/png");a.download=`pub-${format}-${$("visLang").value}.png`;
+  document.body.appendChild(a);a.click();a.remove();
+  toast("Si rien ne se télécharge : appui long ou clic droit sur l'image");
+};
+$("photo").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{photo=im;render()};im.src=r.result};r.readAsDataURL(f)});
+
+let timer;
+function update(){clearTimeout(timer);timer=setTimeout(()=>{$("sampleTag").hidden=true;renderTexts();render();renderPlatforms();saveDraft()},150)}
+$("form").addEventListener("input",update);$("form").addEventListener("change",update);
+$("form").addEventListener("submit",e=>e.preventDefault());
+$("visLang").addEventListener("change",render);
+
+const FIELDS=["name","desc","price","currency","promo","shop","link","c1","c2"];
+function saveDraft(){store.set("pub-draft",{f:Object.fromEntries(FIELDS.map(k=>[k,$(k).value])),langs:selectedLangs()})}
+(function loadDraft(){const d=store.get("pub-draft",null);if(!d)return;
+  FIELDS.forEach(k=>{if(d.f[k]!=null)$(k).value=d.f[k]});
+  langBox.querySelectorAll("input").forEach(i=>i.checked=d.langs.includes(i.value));$("sampleTag").hidden=true})();
+
+renderTexts();renderPlatforms();
+(document.fonts?document.fonts.ready:Promise.resolve()).then(render);render();
+</script>
